@@ -1,0 +1,79 @@
+#!/bin/bash
+
+# Adapted from Zortax' example https://github.com/Zortax/dotfiles/blob/master/install.sh
+# By: Jacob Bechmann Pedersen
+# Date: 2019-06-15
+# License: MIT (See LICENSE)
+
+USER=$(whoami)
+INSTALL_PATH=$(pwd)
+USER_PATH=/home/$USER
+PROFILE_PATH=""
+
+if [[ $USER == "root" ]]; then
+    USER_PATH=/root
+fi
+
+# Function to pick the submodules:
+
+ask() {
+    while true; do
+        if [ "${2:-}" = "Y" ]; then
+            prompt="Y/n"
+            defult=Y
+        elif [ "${2:-}" = "N" ]; then
+            prompt="y/N"
+            default=N
+        else
+            prompt="y/n"
+            default=
+        fi
+        read -p "$1 [$prompt] " REPLY </dev/tty
+        if [ -z "$REPLY" ]; then
+            REPLY=$defult
+        fi
+        case "$REPLY" in
+            Y*|y*) return 0 ;;
+            N*|n*) return 1 ;;
+        esac
+    done
+}
+
+# Install the scripts:
+
+# manga
+
+if ask "Install manga scripts?" Y; then
+	if [ -d $USER_PATH/.scripts ]; then
+		if [ -d $USER_PATH/.scripts/manga ]; then
+			echo "Backing up old manga directory."
+			mv $USER_PATH/.scripts/manga $USER_PATH/.scripts/manga.bak
+		fi
+	else
+		mkdir $USER_PATH/.scripts
+	fi
+
+	echo "Installing manga scripts..."
+	ln -s $INSTALL_PATH/manga $USER_PATH/.scripts/manga
+	PROFILE_PATH="$PROFILE_PATH:$USER_PATH/.scripts/manga"
+fi
+
+if ask "Update \$PATH in .profile?" Y; then
+	if [ -f $USER_PATH/.profile ]; then
+		echo "Backing up old .profile."
+		mv $USER_PATH/.profile $USER_PATH/.profile.bak
+	fi
+
+	echo "Updating \$PATH in .profile..."
+	echo "export PATH=\"\$PATH${PROFILE_PATH}\"" > $USER_PATH/.profile
+	
+	if ask "Source .profile?" Y; then
+		echo "Sourcing .profile..."
+		source $USER_PATH/.profile
+		echo "Done!"
+	else
+		echo "Sourcing of .profile must be done manually to be in effect!"
+	fi
+fi
+
+echo "End of install!"
