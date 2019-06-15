@@ -1,0 +1,45 @@
+#!/bin/bash
+# By: Jacob Bechmann Pedersen
+# Date: 2019-06-15
+# Purpose: To first decompress JoJo's Colored Adventures into /tmp as images, to then create a readable PDF out of the pictures.
+
+# It takes 2 input parameters, the archive to work on, and the output dir, if none is specified, the working dir is assumed:
+if [ $# -eq 0 ]
+then
+	echo "No arguments supplied"
+	echo "Usage:"
+	echo "jojo-pdf-stitcher [input-archive] [OPTIONAL: output-directory]"
+	echo -e "\nExample: jojo-pdf-stitcher ./"Volume 1 - Dio the Invader.rar" ./stitched-pdfs"
+	echo -e "Will produce a stitched PDF from the Volume 1 archive, and put it into the stitched-pdfs directory."
+	echo -e "\nNB: If no output directory is specified, the output will go to the current working directory."
+	exit 1
+fi
+
+# TODO: Make the filename switch between decompression utilities.
+input=$1
+filename=$(basename -- "$input")
+extension="${filename##*.}"
+filenoext="${filename%.*}"
+
+if [ -z "$2" ]
+then
+	outputdir=$(pwd)
+else
+	outputdir=$2
+fi
+
+# Will decompress the specified file to /tmp to begin the stitching in RAM:
+unrar x "$input" /tmp
+
+# Create a page list using ls,
+# Grep for making sure only image files are allowed through:
+ls -dw1 "/tmp/$filenoext"/* | grep -E "\.*(jpg|jpeg|gif|png|bmp|tiff)$" > /tmp/page-list
+
+# Add " to beginning and end of every line of the page-list, to account for spaces in file names:
+sed "s/.*/\"&\"/" /tmp/page-list > /tmp/page-list-string
+
+# Using page-list, convert the decompressed files into a cohesive PDF:
+convert -quality 50 @/tmp/page-list-string "$outputdir/$filenoext.pdf"
+
+# Removes the files from /tmp:
+rm -rf "/tmp/$filenoext" /tmp/page-list /tmp/page-list-string
