@@ -15,21 +15,31 @@ then
 	exit 1
 fi
 
-# TODO: Make the filename switch between decompression utilities.
+# Treat the input parameters:
 input=$1
 filename=$(basename -- "$input")
 extension="${filename##*.}"
 filenoext="${filename%.*}"
 
-if [ -z "$2" ]
-then
+# Either there is a second parameter for output directory or not:
+if [ -z "$2" ]; then
 	outputdir=$(pwd)
 else
 	outputdir=$2
 fi
 
+# The file extension switches between decompression utilities.
 # Will decompress the specified file to /tmp to begin the stitching in RAM:
-unrar x "$input" /tmp
+if [ $extension == "rar" ]; then
+	echo "Received a .$extension file"
+	unrar x "$input" /tmp
+elif [ $extension == "zip" ]; then
+	echo "Received a .$extension file"
+	unzip "$input" -d /tmp
+else
+	echo "Unrecognized archive format, exiting..."
+	exit 1
+fi
 
 # Create a page list using ls,
 # Grep for making sure only image files are allowed through:
