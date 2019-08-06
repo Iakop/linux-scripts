@@ -1,0 +1,103 @@
+#!/bin/bash
+
+# Credit compose script: Creates a composite of a main picture (usually the work of an artist) and a profile pic (to give credit to said artist). Will include name of the artist as well.
+# Author: Jacob Bechmann Pedersen
+# Date: 2019-08-06
+# License: MIT
+
+# First, the original main piece will be blurred and scaled. This can be done simultaneously, to speed up the blurring process:
+
+# Ensure, that there are at least two parameters to the script (profile pic and main pic):
+if [ -z "$2" ]; then
+	echo "The script needs at least two parameters to run.
+	Usage: credit-compose [profile_pic] [main_pic]
+	Optional: credit-compose [profile_pic] [main_pic] [output_file]"
+	exit 1
+fi
+
+# Treat the profile pic input:
+profile_pic=$1
+profile_pic_filename=$(basename -- "$profile_pic")
+profile_pic_extension="${profile_pic_filename##*.}"
+profile_pic_filenoext="${profile_pic_filename%.*}"
+echo "Received profile_pic input: \"${profile_pic_filename}\""
+
+# Treat the main pic input:
+main_pic=$2
+main_pic_filename=$(basename -- "$main_pic")
+main_pic_extension="${main_pic_filename##*.}"
+main_pic_filenoext="${main_pic_filename%.*}"
+echo "Received main_pic input: \"${main_pic_filename}\""
+
+# Either there is a parameter for output file or not.
+# If either a directory, or no output file is given, the output defaults to a standard name, and .png:
+if [ -z "$3" ]; then
+	output_file_path=$(pwd)/${profile_pic_filenoext}-${main_pic_filenoext}-montage.png
+else
+	if [ -d "$3" ]; then
+		output_file_path=$3/${profile_pic_filenoext}-${main_pic_filenoext}-montage.png
+	else
+		output_file_path=$3
+	fi
+fi
+
+# After the output file path is found, the path is printed, and the filename extracted:
+echo "Output will be located in: \"${output_file_path}\""
+output_filename=$(basename -- "${output_file_path}")
+
+# Here the specifics for scaling and blurring are defined:
+scale_down_resize_percent=10
+wanted_resize_percent=150
+final_resize_percent=$(echo "100 ${scale_down_resize_percent} ${wanted_resize_percent}" | awk '{printf "%d", $1 / $2 * $3}')
+wanted_sigma=20
+sigma_factor=$(echo "${scale_down_resize_percent} 100" | awk '{printf "%0.1f", $1 / $2}')
+sigma=$(echo "${wanted_sigma} ${sigma_factor}" | awk '{printf "%0.1f", $1 * $2}')
+
+# After which they are printed:
+echo "scale_down_resize_percent = $scale_down_resize_percent"
+echo "wanted_resize_percent = $wanted_resize_percent"
+echo "final_resize_percent = $final_resize_percent"
+echo "wanted_sigma = $wanted_sigma"
+echo "sigma_factor = $sigma_factor"
+echo "sigma = $sigma"
+
+# Then the picture is scaled and blurred to spec:
+convert $main_pic -filter Gaussian -resize ${scale_down_resize_percent}% -define filter:sigma=$sigma -resize ${final_resize_percent}% "/tmp/${output_filename}"
+
+# The dimensions are identified for further use:
+image_dimension_x=$(identify -format "%[w]" "/tmp/${output_filename}")
+image_dimension_y=$(identify -format "%[h]" "/tmp/${output_filename}")
+# And printed:
+echo "image_dimension_x = $image_dimension_x"
+echo "image_dimension_y = $image_dimension_y"
+
+# The profile pic is scaled according to spec. ie. 100/150*0.25 or in other words: 16%
+# Now for the profile_pic size-to-be:
+profile_pic_factor=0.16
+profile_pic_size_x=$(echo "${profile_pic_factor} ${image_dimension_x}" | awk '{printf "%d", $1 * $2}')
+profile_pic_size_y=$(echo "${profile_pic_factor} ${image_dimension_x}" | awk '{printf "%d", $1 * $2}')
+profile_pic_pos_x=$(echo "${image_dimension_x} 0.132 ${profile_pic_size_x} 0.5" | awk '{printf "%d", $1 * $2 - $3 * $4}')
+profile_pic_pos_y=$(echo "${image_dimension_y} 0.5 ${profile_pic_size_y} 0.5" | awk '{printf "%d", $1 * $2 - $3 * $4}')
+echo "profile_pic_size_x = $profile_pic_size_x"
+echo "profile_pic_size_y = $profile_pic_size_y" 
+echo "profile_pic_pos_x = $profile_pic_pos_x"
+echo "profile_pic_pos_y = $profile_pic_pos_y"
+
+# And the main pic sizes and position:
+main_pic_dimension_x=$(identify -format "%[w]" "${main_pic}")
+main_pic_dimension_y=$(identify -format "%[h]" "${main_pic}")
+main_pic_pos_x=$(echo "${image_dimension_x} 0.605 ${main_pic_dimension_x} 0.5" | awk '{printf "%d", $1 * $2 - $3 * $4}')
+main_pic_pos_y=$(echo "${image_dimension_y} 0.5 ${main_pic_dimension_y} 0.5" | awk '{printf "%d", $1 * $2 - $3 * $4}')
+echo "main_pic_dimension_x = $main_pic_dimension_x"
+echo "main_pic_dimension_y = $main_pic_dimension_y"
+echo "main_pic_pos_x = $main_pic_pos_x"
+echo "main_pic_pos_y = $main_pic_pos_y"     
+
+# Then the output file is spiced up with the profile pic and the main pic:
+convert "/tmp/${output_filename}" \
+	"${profile_pic}" -geometry ${profile_pic_size_x}x${profile_pic_size_y}+${profile_pic_pos_x}+${profile_pic_pos_y} -composite \
+	"${main_pic}" -geometry ${main_pic_dimension_x}x${main_pic_dimension_y}+${main_pic_pos_x}+${main_pic_pos_y} -composite \
+       "/tmp/${output_filename}"
+
+#TODO: Trim the corners of the picture.
+#TODO: Remove output file after script completion.
