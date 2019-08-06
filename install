@@ -58,6 +58,23 @@ if ask "Install manga scripts?" Y; then
 	PROFILE_PATH="$PROFILE_PATH:$USER_PATH/.scripts/manga"
 fi
 
+# pictures
+
+if ask "Install picture scripts?" Y; then
+	if [ -d $USER_PATH/.scripts ]; then
+		if [ -d $USER_PATH/.scripts/pictures ]; then
+			echo "Backing up old manga directory."
+			mv $USER_PATH/.scripts/pictures $USER_PATH/.scripts/pictures.bak
+		fi
+	else
+		mkdir $USER_PATH/.scripts
+	fi
+
+	echo "Installing manga scripts..."
+	ln -s $INSTALL_PATH/pictures $USER_PATH/.scripts/pictures
+	PROFILE_PATH="$PROFILE_PATH:$USER_PATH/.scripts/pictures"
+fi
+
 if ask "Update \$PATH in .profile?" Y; then
 	if [ -f $USER_PATH/.profile ]; then
 		echo "Backing up old .profile."
