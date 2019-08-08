@@ -91,7 +91,15 @@ main_pic_pos_y=$(echo "${image_dimension_y} 0.5 ${main_pic_dimension_y} 0.5" | a
 echo "main_pic_dimension_x = $main_pic_dimension_x"
 echo "main_pic_dimension_y = $main_pic_dimension_y"
 echo "main_pic_pos_x = $main_pic_pos_x"
-echo "main_pic_pos_y = $main_pic_pos_y"     
+echo "main_pic_pos_y = $main_pic_pos_y"
+
+# Calculate the edge trim amount from the main pic placement:
+edge_trim_pix=$(echo "${image_dimension_x} ${main_pic_pos_x} ${main_pic_dimension_x} 2" | awk '{printf "%d", ($1 - ($2 + $3))* $4}')
+echo "edge_trim_pix = $edge_trim_pix"
+
+# Use this to get the new y dimension of the image, to trim the edges:
+new_dimension_y=$(echo "${image_dimension_y} ${edge_trim_pix}" | awk '{printf "%d", $1 - $2}')
+echo "new_dimension_y = $new_dimension_y" 
 
 # Then the output file is spiced up with the profile pic and the main pic:
 convert "/tmp/${output_filename}" \
@@ -99,5 +107,9 @@ convert "/tmp/${output_filename}" \
 	"${main_pic}" -geometry ${main_pic_dimension_x}x${main_pic_dimension_y}+${main_pic_pos_x}+${main_pic_pos_y} -composite \
        "/tmp/${output_filename}"
 
-#TODO: Trim the corners of the picture.
+# Finally, trim the edges:
+convert "/tmp/${output_filename}" -gravity Center -crop ${image_dimension_x}x${new_dimension_y}+0+0 \
+	"/tmp/${output_filename}"
+
+#TODO: Add the artist name too the final output.
 #TODO: Remove output file after script completion.
