@@ -10,8 +10,9 @@
 # Ensure, that there are at least two parameters to the script (profile pic and main pic):
 if [ -z "$2" ]; then
 	echo "The script needs at least two parameters to run.
-	Usage: credit-compose [profile_pic] [main_pic]
-	Optional: credit-compose [profile_pic] [main_pic] [output_file]"
+	Usage: credit-compose [profile_pic] [main_pic] [profile_name]
+	Optional: credit-compose [profile_pic] [main_pic] [profile_name] [output_file]
+	NB: profile_name shpuld be enclosed like; \"John Doe\" if spaces are used!"
 	exit 1
 fi
 
@@ -29,15 +30,26 @@ main_pic_extension="${main_pic_filename##*.}"
 main_pic_filenoext="${main_pic_filename%.*}"
 echo "Received main_pic input: \"${main_pic_filename}\""
 
+# The name input is to be given as a string:
+name_input="$3"
+echo "Received name_input: \"${name_input}\""
+
 # Either there is a parameter for output file or not.
 # If either a directory, or no output file is given, the output defaults to a standard name, and .png:
-if [ -z "$3" ]; then
+if [ -z "$4" ]; then
 	output_file_path=$(pwd)/${profile_pic_filenoext}-${main_pic_filenoext}-montage.png
 else
-	if [ -d "$3" ]; then
-		output_file_path=$3/${profile_pic_filenoext}-${main_pic_filenoext}-montage.png
+	if [ -d "$4" ]; then
+		output_file_path=$4/${profile_pic_filenoext}-${main_pic_filenoext}-montage.png
 	else
-		output_file_path=$3
+		output_file_path=$4
+		output_filename=$(basename -- "$output_file_path")
+		output_extension="${output_filename##*.}"
+		echo "output_extension = $output_extension"
+		if [ "$output_extension" == "$output_filename" ]; then
+			echo "Image format not specified, defaulting to .png!"
+			output_file_path=$4.png
+		fi
 	fi
 fi
 
@@ -106,6 +118,9 @@ convert "/tmp/${output_filename}" \
 	"${profile_pic}" -geometry ${profile_pic_size_x}x${profile_pic_size_y}+${profile_pic_pos_x}+${profile_pic_pos_y} -composite \
 	"${main_pic}" -geometry ${main_pic_dimension_x}x${main_pic_dimension_y}+${main_pic_pos_x}+${main_pic_pos_y} -composite \
        "/tmp/${output_filename}"
+
+# And some text is added for the Artist name:
+
 
 # Finally, trim the edges:
 convert "/tmp/${output_filename}" -gravity Center -crop ${image_dimension_x}x${new_dimension_y}+0+0 \
