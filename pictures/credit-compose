@@ -73,8 +73,11 @@ echo "wanted_sigma = $wanted_sigma"
 echo "sigma_factor = $sigma_factor"
 echo "sigma = $sigma"
 
+output_temp="/tmp/${output_filename}"
+
 # Then the picture is scaled and blurred to spec:
-convert $main_pic -filter Gaussian -resize ${scale_down_resize_percent}% -define filter:sigma=$sigma -resize ${final_resize_percent}% "/tmp/${output_filename}"
+convert "${main_pic}" -filter Gaussian -resize ${scale_down_resize_percent}% -define filter:sigma=$sigma -resize ${final_resize_percent}% "${output_temp}"
+convert "${output_temp}" -fill black -colorize 50% "${output_temp}"
 
 # The dimensions are identified for further use:
 image_dimension_x=$(identify -format "%[w]" "/tmp/${output_filename}")
@@ -88,43 +91,68 @@ echo "image_dimension_y = $image_dimension_y"
 profile_pic_factor=0.16
 profile_pic_size_x=$(echo "${profile_pic_factor} ${image_dimension_x}" | awk '{printf "%d", $1 * $2}')
 profile_pic_size_y=$(echo "${profile_pic_factor} ${image_dimension_x}" | awk '{printf "%d", $1 * $2}')
-profile_pic_pos_x=$(echo "${image_dimension_x} 0.132 ${profile_pic_size_x} 0.5" | awk '{printf "%d", $1 * $2 - $3 * $4}')
-profile_pic_pos_y=$(echo "${image_dimension_y} 0.5 ${profile_pic_size_y} 0.5" | awk '{printf "%d", $1 * $2 - $3 * $4}')
 echo "profile_pic_size_x = $profile_pic_size_x"
 echo "profile_pic_size_y = $profile_pic_size_y" 
-echo "profile_pic_pos_x = $profile_pic_pos_x"
-echo "profile_pic_pos_y = $profile_pic_pos_y"
 
 # And the main pic sizes and position:
 main_pic_dimension_x=$(identify -format "%[w]" "${main_pic}")
 main_pic_dimension_y=$(identify -format "%[h]" "${main_pic}")
-main_pic_pos_x=$(echo "${image_dimension_x} 0.605 ${main_pic_dimension_x} 0.5" | awk '{printf "%d", $1 * $2 - $3 * $4}')
-main_pic_pos_y=$(echo "${image_dimension_y} 0.5 ${main_pic_dimension_y} 0.5" | awk '{printf "%d", $1 * $2 - $3 * $4}')
 echo "main_pic_dimension_x = $main_pic_dimension_x"
 echo "main_pic_dimension_y = $main_pic_dimension_y"
+
+# A temporary picture for the profile pic is made to add glow, placement is then calculated:
+profile_pic_temp="/tmp/${profile_pic_filenoext}.png"
+convert "${profile_pic}" -geometry ${profile_pic_size_x}x${profile_pic_size_y} "${profile_pic_temp}"
+convert "${profile_pic_temp}" \( +clone -background white -shadow 80x8+0+0 \) +swap\
+	-background none -layers merge +repage "${profile_pic_temp}"
+profile_pic_size_x=$(identify -format "%[w]" "${profile_pic_temp}")
+profile_pic_size_y=$(identify -format "%[h]" "${profile_pic_temp}")
+profile_pic_pos_x=$(echo "${image_dimension_x} 0.132 ${profile_pic_size_x} 0.5" | awk '{printf "%d", $1 * $2 - $3 * $4}')
+profile_pic_pos_y=$(echo "${image_dimension_y} 0.5 ${profile_pic_size_y} 0.5" | awk '{printf "%d", $1 * $2 - $3 * $4}')
+echo "profile_pic_pos_x = $profile_pic_pos_x"
+echo "profile_pic_pos_y = $profile_pic_pos_y"
+
+# A temporary picture for the main pic is made to add glow, placement is then calculated:
+main_pic_temp="/tmp/${main_pic_filenoext}.png"
+convert "${main_pic}" -geometry ${main_pic_dimension_x}x${main_pic_dimension_y} "${main_pic_temp}"
+convert "${main_pic_temp}" \( +clone -background white -shadow 80x8+0+0 \) +swap \
+	-background none -layers merge +repage "${main_pic_temp}"
+main_pic_dimension_x=$(identify -format "%[w]" "${main_pic_temp}")
+main_pic_dimension_y=$(identify -format "%[h]" "${main_pic_temp}")
+main_pic_pos_x=$(echo "${image_dimension_x} 0.605 ${main_pic_dimension_x} 0.5" | awk '{printf "%d", $1 * $2 - $3 * $4}')
+main_pic_pos_y=$(echo "${image_dimension_y} 0.5 ${main_pic_dimension_y} 0.5" | awk '{printf "%d", $1 * $2 - $3 * $4}')
 echo "main_pic_pos_x = $main_pic_pos_x"
 echo "main_pic_pos_y = $main_pic_pos_y"
+
+# Then the output file is spiced up with the profile pic and the main pic:
+convert "${output_temp}" \
+	"${profile_pic_temp}" -geometry +${profile_pic_pos_x}+${profile_pic_pos_y} -composite \
+	"${main_pic_temp}" -geometry +${main_pic_pos_x}+${main_pic_pos_y} -composite \
+       "${output_temp}"
+
+# And some text is added for the Artist name
+text_height_px=$(echo "${profile_pic_size_y} 4" | awk '{printf "%d", $1 / $2}')
+
+# First an overlay is created for the text:
+name_temp="/tmp/${name_input}.png"
+convert -background none -font Noto-Sans-Regular -fill white -gravity North -size ${profile_pic_size_x}x${text_height_px} caption:"${name_input}" "${name_temp}"
+
+# Then the overlay is applied:
+text_pos_x=${profile_pic_pos_x}
+text_pos_y=$(echo "${profile_pic_pos_y} ${profile_pic_size_y}" | awk '{printf "%d", $1 + $2}')
+convert "${output_temp}" "${name_temp}" -geometry +${text_pos_x}+${text_pos_y} -composite "${output_temp}"
 
 # Calculate the edge trim amount from the main pic placement:
 edge_trim_pix=$(echo "${image_dimension_x} ${main_pic_pos_x} ${main_pic_dimension_x} 2" | awk '{printf "%d", ($1 - ($2 + $3))* $4}')
 echo "edge_trim_pix = $edge_trim_pix"
 
 # Use this to get the new y dimension of the image, to trim the edges:
-new_dimension_y=$(echo "${image_dimension_y} ${edge_trim_pix}" | awk '{printf "%d", $1 - $2}')
+new_dimension_y=$(echo "${main_pic_dimension_y} ${edge_trim_pix}" | awk '{printf "%d", $1 + $2}')
 echo "new_dimension_y = $new_dimension_y" 
 
-# Then the output file is spiced up with the profile pic and the main pic:
-convert "/tmp/${output_filename}" \
-	"${profile_pic}" -geometry ${profile_pic_size_x}x${profile_pic_size_y}+${profile_pic_pos_x}+${profile_pic_pos_y} -composite \
-	"${main_pic}" -geometry ${main_pic_dimension_x}x${main_pic_dimension_y}+${main_pic_pos_x}+${main_pic_pos_y} -composite \
-       "/tmp/${output_filename}"
-
-# And some text is added for the Artist name:
-
-
 # Finally, trim the edges:
-convert "/tmp/${output_filename}" -gravity Center -crop ${image_dimension_x}x${new_dimension_y}+0+0 \
-	"/tmp/${output_filename}"
+convert "${output_temp}" -gravity Center -crop ${image_dimension_x}x${new_dimension_y}+0+0 \
+	"${output_file_path}"
 
-#TODO: Add the artist name too the final output.
-#TODO: Remove output file after script completion.
+# Remove the temporary files:
+rm "${output_temp}" "${profile_pic_temp}" "${main_pic_temp}" "${name_temp}"
