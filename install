@@ -42,7 +42,6 @@ ask() {
 # Install the scripts:
 
 # manga
-
 if ask "Install manga scripts?" Y; then
 	if [ -d $USER_PATH/.scripts ]; then
 		if [ -d $USER_PATH/.scripts/manga ]; then
@@ -59,20 +58,35 @@ if ask "Install manga scripts?" Y; then
 fi
 
 # pictures
-
-if ask "Install picture scripts?" Y; then
+if ask "Install pictures scripts?" Y; then
 	if [ -d $USER_PATH/.scripts ]; then
 		if [ -d $USER_PATH/.scripts/pictures ]; then
-			echo "Backing up old manga directory."
+			echo "Backing up old pictures directory."
 			mv $USER_PATH/.scripts/pictures $USER_PATH/.scripts/pictures.bak
 		fi
 	else
 		mkdir $USER_PATH/.scripts
 	fi
 
-	echo "Installing manga scripts..."
+	echo "Installing pictures scripts..."
 	ln -s $INSTALL_PATH/pictures $USER_PATH/.scripts/pictures
 	PROFILE_PATH="$PROFILE_PATH:$USER_PATH/.scripts/pictures"
+fi
+
+# misc
+if ask "Install misc scripts?" Y; then
+	if [ -d $USER_PATH/.scripts ]; then
+		if [ -d $USER_PATH/.scripts/misc ]; then
+			echo "Backing up old misc directory."
+			mv $USER_PATH/.scripts/misc $USER_PATH/.scripts/misc.bak
+		fi
+	else
+		mkdir $USER_PATH/.scripts
+	fi
+
+	echo "Installing misc scripts..."
+	ln -s $INSTALL_PATH/misc $USER_PATH/.scripts/misc
+	PROFILE_PATH="$PROFILE_PATH:$USER_PATH/.scripts/misc"
 fi
 
 if ask "Update \$PATH in .profile?" Y; then

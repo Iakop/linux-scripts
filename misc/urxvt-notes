@@ -1,0 +1,42 @@
+#!/bin/bash
+
+# URxvt-notes: Allows the user to take notes using vim launched in a floating, sticky urxvt instance.
+# Author: Jacob Bechmann Pedersen
+# Date: 2019-09-22
+# License: MIT
+
+# Get the wm info (Thanks dylanaraps!):
+id="$(xprop -root -notype _NET_SUPPORTING_WM_CHECK)"
+id="${id##* }"
+wm="$(xprop -id "$id" -notype -len 100 -f _NET_WM_NAME 8t)"
+wm="${wm/*WM_NAME = }"
+wm="${wm/\"}"
+wm="${wm/\"*}"
+
+case "$wm" in
+	i3)
+		nohup urxvt -name "URxvt-Notes" -title "URxvt-Notes" -e vim $HOME/.notes >/dev/null 2>&1 & 
+		pid="$!"
+		
+		# Thanks a lot, Raphael:
+		# https://unix.stackexchange.com/questions/450700/opening-a-programme-in-a-floating-window-in-i3
+		# Wait for the window to open and grab its window ID
+		winid=''
+		while : ; do
+		    winid="`wmctrl -lp | awk -vpid=$pid '$3==pid {print $1; exit}'`"
+		    [[ -z "${winid}" ]] || break
+		done
+		# Focus the window we found
+		wmctrl -ia "${winid}"
+		# Make it float
+		i3-msg floating enable >/dev/null 2>&1
+		# Make sticky
+		i3-msg sticky enable >/dev/null 2>&1
+		# Wait for the application to quit
+		wait "${pid}"
+		;;
+	*)
+		echo "$wm Not supported... yet!"
+		exit 1
+		;;	
+esac
