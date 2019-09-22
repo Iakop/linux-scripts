@@ -73,6 +73,22 @@ if ask "Install pictures scripts?" Y; then
 	PROFILE_PATH="$PROFILE_PATH:$USER_PATH/.scripts/pictures"
 fi
 
+# videos
+if ask "Install videos scripts?" Y; then
+	if [ -d $USER_PATH/.scripts ]; then
+		if [ -d $USER_PATH/.scripts/videos ]; then
+			echo "Backing up old videos directory."
+			mv $USER_PATH/.scripts/videos $USER_PATH/.scripts/videos.bak
+		fi
+	else
+		mkdir $USER_PATH/.scripts
+	fi
+
+	echo "Installing videos scripts..."
+	ln -s $INSTALL_PATH/videos $USER_PATH/.scripts/videos
+	PROFILE_PATH="$PROFILE_PATH:$USER_PATH/.scripts/videos"
+fi
+
 # misc
 if ask "Install misc scripts?" Y; then
 	if [ -d $USER_PATH/.scripts ]; then

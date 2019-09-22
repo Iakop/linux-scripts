@@ -1,0 +1,9 @@
+#!/bin/bash
+
+# Check for url parameter:
+if [ -z "$1" ]; then
+	echo -e "The script needs a stream url to run.\n\tUsage: mpv-stream [url]"
+	exit 1
+fi
+
+nohup mpv $1 >/dev/null 2>&1 &

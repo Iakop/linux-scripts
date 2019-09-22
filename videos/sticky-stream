@@ -1,0 +1,64 @@
+#!/bin/bash
+
+# sticky-stream: Makes a sticky-floating window in i3, out of a video source.
+# Author: Jacob Bechmann Pedersen
+# Date: 2019-09-22
+# License: MIT
+
+# Check for url parameter:
+if [ -z "$1" ]; then
+	echo -e "The script needs a stream url to run.\n\tUsage: mpv-stream [url]"
+	exit 1
+fi
+
+# Get the current display size:
+dispno=$(echo "$DISPLAY" | tr -d ":")
+dispres=$(xrandr | grep "Screen $dispno:" | awk -F ", " '{print $2}' | tr -d "current " | tr -d " ")
+sizex=$(echo "$dispres" | awk -F "x" '{printf "%d", $1 * 0.25}')
+sizey=$(echo "$dispres" | awk -F "x" '{printf "%d", $2 * 0.25}')
+posr=$(echo "$sizex" | awk '{printf "%d", $1 * 1.4}')
+posup=$(echo "$sizey" | awk '{printf "%d", $1 * 1.35}')
+
+# Get the wm info (Thanks dylanaraps!):
+id="$(xprop -root -notype _NET_SUPPORTING_WM_CHECK)"
+id="${id##* }"
+wm="$(xprop -id "$id" -notype -len 100 -f _NET_WM_NAME 8t)"
+wm="${wm/*WM_NAME = }"
+wm="${wm/\"}"
+wm="${wm/\"*}"
+
+case "$wm" in
+	i3)
+		nohup mpv $1 >/dev/null 2>&1 &
+		pid="$!"
+
+		# Thanks a lot, Raphael:
+		# https://unix.stackexchange.com/questions/450700/opening-a-programme-in-a-floating-window-in-i3
+		# Wait for the window to open and grab its window ID
+		winid=''
+		while : ; do
+		    winid="`wmctrl -lp | awk -vpid=$pid '$3==pid {print $1; exit}'`"
+		    [[ -z "${winid}" ]] || break
+		done
+		# Focus the window we found
+		wmctrl -ia "${winid}"
+		# Make it float
+		i3-msg floating enable >/dev/null 2>&1
+		# Make sticky
+		i3-msg sticky enable >/dev/null 2>&1
+		# Resize
+		i3-msg resize shrink width 10000px >/dev/null 2>&1
+		i3-msg resize grow width ${sizex}px >/dev/null 2>&1
+		i3-msg resize shrink height 10000px >/dev/null 2>&1
+		i3-msg resize grow height ${sizey}px >/dev/null 2>&1
+		# Position it nicely
+		i3-msg move position center >/dev/null 2>&1
+		i3-msg move right ${posr}px >/dev/null 2>&1
+		i3-msg move up ${posup}px >/dev/null 2>&1
+		;;
+	*)
+		echo "$wm Not supported... yet!"
+		exit 1
+		;;
+esac
+

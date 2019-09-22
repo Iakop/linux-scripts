@@ -33,7 +33,6 @@ case "$wm" in
 		# Make sticky
 		i3-msg sticky enable >/dev/null 2>&1
 		# Wait for the application to quit
-		wait "${pid}"
 		;;
 	*)
 		echo "$wm Not supported... yet!"
