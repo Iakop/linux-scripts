@@ -17,92 +17,117 @@ fi
 # Function to pick the submodules:
 
 ask() {
-    while true; do
-        if [ "${2:-}" = "Y" ]; then
-            prompt="Y/n"
-            defult=Y
-        elif [ "${2:-}" = "N" ]; then
-            prompt="y/N"
-            default=N
-        else
-            prompt="y/n"
-            default=
-        fi
-        read -p "$1 [$prompt] " REPLY </dev/tty
-        if [ -z "$REPLY" ]; then
-            REPLY=$defult
-        fi
-        case "$REPLY" in
-            Y*|y*) return 0 ;;
-            N*|n*) return 1 ;;
-        esac
-    done
+	while true; do
+		if [ "${2:-}" = "Y" ]; then
+			prompt="Y/n"
+			default=Y
+		elif [ "${2:-}" = "N" ]; then
+			prompt="y/N"
+			default=N
+		else
+			prompt="y/n"
+			default=
+		fi
+		read -p "$1 [$prompt] " REPLY </dev/tty
+		if [ -z "$REPLY" ]; then
+			REPLY=$default
+		fi
+		case "$REPLY" in
+			Y*|y*) return 0 ;;
+			N*|n*) return 1 ;;
+		esac
+	done
 }
 
 # Install the scripts:
 
 # manga
 if ask "Install manga scripts?" Y; then
-	if [ -d $USER_PATH/.scripts ]; then
-		if [ -d $USER_PATH/.scripts/manga ]; then
-			echo "Backing up old manga directory."
-			mv $USER_PATH/.scripts/manga $USER_PATH/.scripts/manga.bak
+	if [ ! -d "$USER_PATH/.scripts/" ]; then
+		mkdir "$USER_PATH/.scripts/"
+	fi
+	if [ -d "$USER_PATH/.scripts/manga/" ]; then
+		diff -r "$USER_PATH/.scripts/manga/" "$INSTALL_PATH/manga" >/dev/null 2>&1
+		retval=$?
+		if [ $retval -eq 0 ]; then
+			echo "manga scripts already installed!"
+		else
+			echo "Backup up old manga scripts..."
+			mv "$USER_PATH/.scripts/manga/" "$USER_PATH/.scripts/manga.bak"
+			echo "Installing manga scripts..."
+			cp -r "$INSTALL_PATH/manga" "$USER_PATH/.scripts/manga"
 		fi
 	else
-		mkdir $USER_PATH/.scripts
+		echo "Installing manga scripts..."
+		cp -r "$INSTALL_PATH/manga" "$USER_PATH/.scripts/manga"
 	fi
-
-	echo "Installing manga scripts..."
-	ln -s $INSTALL_PATH/manga $USER_PATH/.scripts/manga
-	PROFILE_PATH="$PROFILE_PATH:$USER_PATH/.scripts/manga"
 fi
 
 # pictures
 if ask "Install pictures scripts?" Y; then
-	if [ -d $USER_PATH/.scripts ]; then
-		if [ -d $USER_PATH/.scripts/pictures ]; then
-			echo "Backing up old pictures directory."
-			mv $USER_PATH/.scripts/pictures $USER_PATH/.scripts/pictures.bak
+	if [ ! -d "$USER_PATH/.scripts/" ]; then
+		mkdir "$USER_PATH/.scripts/"
+	fi
+	if [ -d "$USER_PATH/.scripts/pictures/" ]; then
+		diff -r "$USER_PATH/.scripts/pictures/" "$INSTALL_PATH/pictures" >/dev/null 2>&1
+		retval=$?
+		if [ $retval -eq 0 ]; then
+			echo "pictures scripts already installed!"
+		else
+			echo "Backup up old pictures scripts..."
+			mv "$USER_PATH/.scripts/pictures/" "$USER_PATH/.scripts/pictures.bak"
+			echo "Installing pictures scripts..."
+			cp -r "$INSTALL_PATH/pictures" "$USER_PATH/.scripts/pictures"
 		fi
 	else
-		mkdir $USER_PATH/.scripts
+		echo "Installing pictures scripts..."
+		cp -r "$INSTALL_PATH/pictures" "$USER_PATH/.scripts/pictures"
 	fi
-
-	echo "Installing pictures scripts..."
-	ln -s $INSTALL_PATH/pictures $USER_PATH/.scripts/pictures
-	PROFILE_PATH="$PROFILE_PATH:$USER_PATH/.scripts/pictures"
 fi
+
 
 # videos
 if ask "Install videos scripts?" Y; then
-	if [ -d $USER_PATH/.scripts ]; then
-		if [ -d $USER_PATH/.scripts/videos ]; then
-			echo "Backing up old videos directory."
-			mv $USER_PATH/.scripts/videos $USER_PATH/.scripts/videos.bak
+	if [ ! -d "$USER_PATH/.scripts/" ]; then
+		mkdir "$USER_PATH/.scripts/"
+	fi
+	if [ -d "$USER_PATH/.scripts/videos/" ]; then
+		diff -r "$USER_PATH/.scripts/videos/" "$INSTALL_PATH/videos" >/dev/null 2>&1
+		retval=$?
+		if [ $retval -eq 0 ]; then
+			echo "videos scripts already installed!"
+		else
+			echo "Backup up old videos scripts..."
+			mv "$USER_PATH/.scripts/videos/" "$USER_PATH/.scripts/videos.bak"
+			echo "Installing videos scripts..."
+			cp -r "$INSTALL_PATH/videos" "$USER_PATH/.scripts/videos"
 		fi
 	else
-		mkdir $USER_PATH/.scripts
+		echo "Installing videos scripts..."
+		cp -r "$INSTALL_PATH/videos" "$USER_PATH/.scripts/videos"
 	fi
-
-	echo "Installing videos scripts..."
-	ln -s $INSTALL_PATH/videos $USER_PATH/.scripts/videos
-	PROFILE_PATH="$PROFILE_PATH:$USER_PATH/.scripts/videos"
 fi
 
 # misc
 if ask "Install misc scripts?" Y; then
-	if [ -d $USER_PATH/.scripts ]; then
-		if [ -d $USER_PATH/.scripts/misc ]; then
-			echo "Backing up old misc directory."
-			mv $USER_PATH/.scripts/misc $USER_PATH/.scripts/misc.bak
+	if [ ! -d "$USER_PATH/.scripts/" ]; then
+		mkdir "$USER_PATH/.scripts/"
+	fi
+	if [ -d "$USER_PATH/.scripts/misc/" ]; then
+		diff -r "$USER_PATH/.scripts/misc/" "$INSTALL_PATH/misc" >/dev/null 2>&1
+		retval=$?
+		if [ $retval -eq 0 ]; then
+			echo "misc scripts already installed!"
+		else
+			echo "Backup up old misc scripts..."
+			mv "$USER_PATH/.scripts/misc/" "$USER_PATH/.scripts/misc.bak"
+			echo "Installing misc scripts..."
+			cp -r "$INSTALL_PATH/misc" "$USER_PATH/.scripts/misc"
 		fi
 	else
-		mkdir $USER_PATH/.scripts
+		echo "Installing misc scripts..."
+		cp -r "$INSTALL_PATH/misc" "$USER_PATH/.scripts/misc"
 	fi
-
-	echo "Installing misc scripts..."
-	ln -s $INSTALL_PATH/misc $USER_PATH/.scripts/misc
-	PROFILE_PATH="$PROFILE_PATH:$USER_PATH/.scripts/misc"
 fi
 
 if ask "Update \$PATH in .profile?" Y; then

@@ -1,0 +1,14 @@
+#!/bin/bash
+
+# masquerade: Allows IP to be forwarded from another computer using calling computer as a gateway.
+# Author: Jacob Bechmann Pedersen
+# Date: 2019-10-07
+# License: MIT
+
+if [ "$(whoami)" != "root" ]; then
+	echo "You must run this script as root!"
+	exit 1
+fi
+
+iptables -A POSTROUTING -t nat -j MASQUERADE
+echo 1 | tee /proc/sys/net/ipv4/ip_forward > /dev/null 
