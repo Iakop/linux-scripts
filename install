@@ -7,12 +7,10 @@
 
 USER=$(whoami)
 INSTALL_PATH=$(pwd)
-USER_PATH=/home/$USER
-PROFILE_PATH=""
+USER_PATH="$HOME"
 
-if [[ $USER == "root" ]]; then
-    USER_PATH=/root
-fi
+# Declare PROFILE PATH as an array:
+declare -a PROFILE_PATH
 
 # Function to pick the submodules:
 
@@ -43,6 +41,7 @@ ask() {
 
 # manga
 if ask "Install manga scripts?" Y; then
+	PROFILE_PATH+=("$USER_PATH/.scripts/manga/")
 	if [ ! -d "$USER_PATH/.scripts/" ]; then
 		mkdir "$USER_PATH/.scripts/"
 	fi
@@ -65,6 +64,7 @@ fi
 
 # pictures
 if ask "Install pictures scripts?" Y; then
+	PROFILE_PATH+=("$USER_PATH/.scripts/pictures/")
 	if [ ! -d "$USER_PATH/.scripts/" ]; then
 		mkdir "$USER_PATH/.scripts/"
 	fi
@@ -88,6 +88,7 @@ fi
 
 # videos
 if ask "Install videos scripts?" Y; then
+	PROFILE_PATH+=("$USER_PATH/.scripts/videos/")
 	if [ ! -d "$USER_PATH/.scripts/" ]; then
 		mkdir "$USER_PATH/.scripts/"
 	fi
@@ -110,6 +111,7 @@ fi
 
 # misc
 if ask "Install misc scripts?" Y; then
+	PROFILE_PATH+=("$USER_PATH/.scripts/misc/")
 	if [ ! -d "$USER_PATH/.scripts/" ]; then
 		mkdir "$USER_PATH/.scripts/"
 	fi
@@ -131,17 +133,37 @@ if ask "Install misc scripts?" Y; then
 fi
 
 if ask "Update \$PATH in .profile?" Y; then
-	if [ -f $USER_PATH/.profile ]; then
+	if [ -f "$USER_PATH/.profile" ]; then
 		echo "Backing up old .profile."
-		mv $USER_PATH/.profile $USER_PATH/.profile.bak
+		cp "$USER_PATH/.profile" "$USER_PATH/.profile.bak"
+	else
+		touch "$USER_PATH/.profile"
 	fi
 
 	echo "Updating \$PATH in .profile..."
-	echo "export PATH=\"\$PATH${PROFILE_PATH}\"" > $USER_PATH/.profile
+	# Check if the line for exporting PATH exists in .profile:
+	grep -n "export PATH=" "$USER_PATH/.profile" > /dev/null 2>&1
+	retval=$?
+	if [ $retval -ne 0 ]; then
+		echo "export PATH=\"\$PATH\"" >> "$USER_PATH/.profile"
+	fi
+
+	# For each entry in PROFILE_PATH, check if it is in the path:
+	for i in "${!PROFILE_PATH[@]}"; do
+		grep "export PATH=.*${PROFILE_PATH[$i]}" "$USER_PATH/.profile" > /dev/null 2>&1
+		retval=$?
+		# If it is not in the path, it must be added:
+		if [ $retval -ne 0 ]; then
+			echo "Adding ${PROFILE_PATH[$i]}..."
+			pathappend=$(echo "${PROFILE_PATH[$i]}" | sed 's/\//\\\//g')
+			sed "s/\(export PATH=\".*[^\"]\).*/\1\:${pathappend}\"/" "$USER_PATH/.profile" > /tmp/.profile
+			cp /tmp/.profile "$USER_PATH/.profile"
+		fi
+	done
 	
 	if ask "Source .profile?" Y; then
 		echo "Sourcing .profile..."
-		source $USER_PATH/.profile
+		source "$USER_PATH/.profile"
 		echo "Done!"
 	else
 		echo "Sourcing of .profile must be done manually to be in effect!"
