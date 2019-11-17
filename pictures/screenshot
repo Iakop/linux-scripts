@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# Screenshot script: Takes a screenshot to fit the selection of your mouse, saves it to the directory specified in $1, and copies to your clipboard, if -c specified
+# Author: Jacob Bechmann Pedersen
+# Date: 2019-08-06
+# License: MIT
+
+if [ -z "$1" ]; then
+	echo "The script needs at least outputdir to run.
+	Usage: screenshot [options] [outputdir]
+	Options:
+	-c : Copies the screenshot to clipboard."
+	exit 1
+fi
+
+outputdir=$1
+clipboard=no
+
+while getopts c: option; do
+	case "${option}" in
+		c) 
+			if [ -z "$1" ]; then
+				echo "The script needs at least outputdir to run.
+				Usage: screenshot [options] [outputdir]
+				Options:
+				-c : Copies the screenshot to clipboard."
+				exit 1
+			fi
+			clipboard=yes
+			outputdir=$2;;
+	esac
+done
+
+if [ $clipboard == "yes" ]; then
+	maim -u -s | tee "$outputdir/$(date +%Y-%m-%d_%H-%M-%S).png" | xclip -selection clipboard -t image/png
+else
+	maim -u -s | echo > "$outputdir/$(date +%Y-%m-%d_%H-%M-%S).png"
+fi
