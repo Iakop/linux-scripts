@@ -1,0 +1,12 @@
+#!/bin/bash
+
+wallpaper=$1
+WALLPAPERDIR=$HOME/.wallpaper
+
+mkdir -p $WALLPAPERDIR
+convert $wallpaper -resize 5440x2560^ -gravity center -extent 5440x2560 /tmp/resized-bg.png
+convert /tmp/resized-bg.png -crop 1440x2560+0+0 /tmp/resized-bg-1.png
+convert /tmp/resized-bg.png -crop 2560x1440+1440+560 /tmp/resized-bg-2.png
+convert /tmp/resized-bg.png -crop 1440x2560+4000+0 /tmp/resized-bg-3.png
+cp /tmp/resized-bg*.png $WALLPAPERDIR/
+"feh" --bg-fill $WALLPAPERDIR/resized-bg-2.png $WALLPAPERDIR/resized-bg-1.png $WALLPAPERDIR/resized-bg-3.png
