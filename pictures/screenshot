@@ -32,7 +32,7 @@ while getopts c: option; do
 done
 
 if [ $clipboard == "yes" ]; then
-	maim -u -s | tee "$outputdir/$(date +%Y-%m-%d_%H-%M-%S).png" | xclip -selection clipboard -t image/png
+	maim -s --format=png -u | tee "$outputdir/$(date +%Y-%m-%d_%H-%M-%S).png" | xclip -selection clipboard -t image/png
 else
-	maim -u -s | echo > "$outputdir/$(date +%Y-%m-%d_%H-%M-%S).png"
+	maim -s --format=png "$outputdir/$(date +%Y-%m-%d_%H-%M-%S).png"
 fi
