@@ -605,6 +605,7 @@ redmond97() {
 	xfconf-query -c xsettings -np '/Gtk/MonospaceFontName' -s 'More Perfect DOS VGA 11'
 	
 	gsettings set org.gnome.desktop.wm.preferences theme 'Redmond97'
+  gsettings set org.gnome.desktop.wm.preferences button-layout ':minimize,maximize,close,'
 
 	redmondcommon
 }
@@ -616,6 +617,7 @@ redmond97millennium() {
 	xfconf-query -c xsettings -np '/Gtk/MonospaceFontName' -s 'More Perfect DOS VGA 11'
 
 	gsettings set org.gnome.desktop.wm.preferences theme 'Redmond97 Millennium'
+  gsettings set org.gnome.desktop.wm.preferences button-layout ':minimize,maximize,close,'
 
 	redmondcommon
 }
@@ -627,6 +629,7 @@ arcdark() {
 	xfconf-query -c xsettings -np '/Gtk/MonospaceFontName' -s 'Monaco 10'
 
 	gsettings set org.gnome.desktop.wm.preferences theme 'Arc'
+  gsettings set org.gnome.desktop.wm.preferences button-layout ':minimize,maximize,close,'
 
 	arccommon
 }
