@@ -1,0 +1,634 @@
+#!/bin/bash
+
+# Author: Jacob Bechmann Pedersen
+# Date: 2020-07-07
+# Description: Simple XFCE ricing script, to swiftly change between different custom session themes I like.
+
+redmondcommon() {
+	xfce4-panel --quit
+	pkill xfconfd
+	sleep 1
+
+cat > "${HOME}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml" << EOF1
+<?xml version="1.0" encoding="UTF-8"?>
+
+<channel name="xfce4-panel" version="1.0">
+  <property name="configver" type="int" value="2"/>
+  <property name="panels" type="array">
+    <!--panel number 1-->
+    <value type="int" value="1"/>
+    <property name="panel-1" type="empty">
+      <property name="autohide-behavior" type="uint" value="0"/>
+      <property name="disable-struts" type="bool" value="false"/>
+      <property name="icon-size" type="uint" value="0"/>
+      <property name="leave-opacity" type="uint" value="100"/>
+      <property name="length" type="uint" value="100"/>
+      <property name="length-adjust" type="bool" value="true"/>
+      <property name="output-name" type="string" value="Primary"/>
+      <property name="plugin-ids" type="array">
+        <value type="int" value="1"/>
+        <value type="int" value="2"/>
+        <value type="int" value="3"/>
+        <value type="int" value="4"/>
+        <value type="int" value="5"/>
+        <value type="int" value="6"/>
+        <value type="int" value="7"/>
+        <value type="int" value="8"/>
+        <value type="int" value="9"/>
+        <value type="int" value="10"/>
+        <value type="int" value="11"/>
+        <value type="int" value="12"/>
+        <value type="int" value="13"/>
+        <value type="int" value="14"/>
+        <value type="int" value="15"/>
+        <value type="int" value="16"/>
+        <value type="int" value="17"/>
+      </property>
+      <property name="position" type="string" value="p=10;x=3839;y=1413"/>
+      <property name="position-locked" type="bool" value="true"/>
+      <property name="size" type="uint" value="30"/>
+      <property name="span-monitors" type="bool" value="false"/>
+    </property>
+  </property>
+  <property name="plugins" type="empty">
+    <!--whiskermenu-->
+    <property name="plugin-1" type="string" value="whiskermenu"/>
+    <property name="plugin-2" type="string" value="separator">
+      <property name="style" type="uint" value="0"/>
+    </property>
+    <!--launchers-->
+    <property name="plugin-3" type="string" value="launcher">
+      <property name="items" type="array">
+        <value type="string" value="thunar.desktop"/>
+      </property>
+    </property>
+    <property name="plugin-4" type="string" value="launcher">
+      <property name="items" type="array">
+        <value type="string" value="firefox.desktop"/>
+      </property>
+    </property>
+    <property name="plugin-5" type="string" value="launcher">
+      <property name="items" type="array">
+        <value type="string" value="thunderbird.desktop"/>
+      </property>
+    </property>
+    <property name="plugin-6" type="string" value="launcher">
+      <property name="items" type="array">
+        <value type="string" value="spotify.desktop"/>
+      </property>
+    </property>
+    <property name="plugin-7" type="string" value="launcher">
+      <property name="items" type="array">
+        <value type="string" value="sublime_text.desktop"/>
+      </property>
+    </property>
+    <property name="plugin-8" type="string" value="launcher">
+      <property name="items" type="array">
+        <value type="string" value="xfce4-terminal.desktop"/>
+      </property>
+    </property>
+    <property name="plugin-9" type="string" value="launcher">
+      <property name="items" type="array">
+        <value type="string" value="steam.desktop"/>
+      </property>
+    </property>
+    <property name="plugin-10" type="string" value="launcher">
+      <property name="items" type="array">
+        <value type="string" value="discord.desktop"/>
+      </property>
+    </property>
+    <!--active window icons-->
+    <property name="plugin-11" type="string" value="tasklist">
+      <property name="flat-buttons" type="bool" value="false"/>
+      <property name="grouping" type="uint" value="0"/>
+      <property name="show-handle" type="bool" value="false"/>
+      <property name="show-labels" type="bool" value="true"/>
+      <property name="window-scrolling" type="bool" value="false"/>
+    </property>
+    <property name="plugin-12" type="string" value="separator">
+      <property name="expand" type="bool" value="true"/>
+      <property name="style" type="uint" value="0"/>
+    </property>
+    <!--pulseaudio control-->
+    <property name="plugin-13" type="string" value="pulseaudio">
+      <property name="enable-keyboard-shortcuts" type="bool" value="true"/>
+      <property name="mpris-players" type="string" value="chromium.instance37980;spotify"/>
+    </property>
+    <!--systray-->
+    <property name="plugin-14" type="string" value="systray">
+      <property name="names-ordered" type="array">
+        <value type="string" value="caffeine"/>
+        <value type="string" value="redshift-gtk"/>
+        <value type="string" value="steam"/>
+        <value type="string" value="discord"/>
+        <value type="string" value="nextcloud"/>
+        <value type="string" value="blueman-tray"/>
+        <value type="string" value="networkmanager applet"/>
+        <value type="string" value="thunar"/>
+        <value type="string" value="xpad"/>
+        <value type="string" value="cura"/>
+        <value type="string" value="blueman"/>
+        <value type="string" value="bluetooth enabled"/>
+        <value type="string" value="pasystray"/>
+        <value type="string" value="pulseaudio system tray"/>
+      </property>
+      <property name="names-hidden" type="array">
+        <value type="string" value="bluetooth enabled"/>
+        <value type="string" value="pulseaudio system tray"/>
+        <value type="string" value="cura"/>
+        <value type="string" value="pasystray"/>
+      </property>
+      <property name="size-max" type="uint" value="18"/>
+      <property name="square-icons" type="bool" value="true"/>
+      <property name="show-frame" type="bool" value="false"/>
+    </property>
+    <property name="plugin-15" type="string" value="clock">
+      <property name="tooltip-format" type="string" value="%A %d %B %Y"/>
+      <property name="digital-format" type="string" value="%H:%M - %Y-%m-%d "/>
+      <property name="timezone" type="string" value=""/>
+    </property>
+    <property name="plugin-16" type="string" value="separator">
+      <property name="expand" type="bool" value="false"/>
+      <property name="style" type="uint" value="0"/>
+    </property>
+    <!--systray - here i can uncomment what I don't want to see-->
+    <property name="plugin-17" type="string" value="actions">
+      <property name="appearance" type="uint" value="0"/>
+      <property name="items" type="array">
+        <value type="string" value="-lock-screen"/>
+        <value type="string" value="-switch-user"/>
+        <value type="string" value="-separator"/>
+        <value type="string" value="-suspend"/>
+        <value type="string" value="-hibernate"/>
+        <value type="string" value="-hybrid-sleep"/>
+        <value type="string" value="-separator"/>
+        <value type="string" value="-shutdown"/>
+        <value type="string" value="-restart"/>
+        <value type="string" value="-separator"/>
+        <value type="string" value="+logout"/>
+        <value type="string" value="-logout-dialog"/>
+      </property>
+    </property>
+  </property>
+</channel>
+EOF1
+
+cat > "${HOME}/.config/xfce4/panel/whiskermenu-1.rc" << EOF1
+favorites=thunar.desktop,firefox.desktop,thunderbird.desktop,spotify.desktop,sublime_text.desktop,urxvt.desktop,steam.desktop
+recent=firefox.desktop,sublime_text.desktop,xfce4-panel-profiles.desktop,xfce-display-settings.desktop,discord.desktop,ccsm.desktop,gimp.desktop,xfce-keyboard-settings.desktop,spotify.desktop,vncviewer.desktop
+button-title=Start\ \ \ 
+button-icon=archlinux-user
+button-single-row=false
+show-button-title=true
+show-button-icon=true
+launcher-show-name=true
+launcher-show-description=true
+launcher-show-tooltip=true
+item-icon-size=2
+hover-switch-category=false
+category-show-name=true
+category-icon-size=1
+load-hierarchy=false
+view-as-icons=false
+recent-items-max=10
+favorites-in-recent=true
+display-recent-default=false
+position-search-alternate=true
+position-commands-alternate=true
+position-categories-alternate=true
+stay-on-focus-out=false
+confirm-session-command=true
+menu-width=400
+menu-height=500
+menu-opacity=100
+command-settings=xfce4-settings-manager
+show-command-settings=true
+command-lockscreen=i3lock-fancy-rapid 10 5
+show-command-lockscreen=true
+command-switchuser=gdmflexiserver
+show-command-switchuser=false
+command-logoutuser=xfce4-session-logout --logout --fast
+show-command-logoutuser=false
+command-restart=xfce4-session-logout --reboot --fast
+show-command-restart=false
+command-shutdown=xfce4-session-logout --halt --fast
+show-command-shutdown=false
+command-suspend=xfce4-session-logout --suspend
+show-command-suspend=false
+command-hibernate=xfce4-session-logout --hibernate
+show-command-hibernate=false
+command-logout=xfce4-session-logout
+show-command-logout=true
+command-menueditor=menulibre
+show-command-menueditor=true
+command-profile=mugshot
+show-command-profile=true
+search-actions=5
+
+[action0]
+name=Man Pages
+pattern=#
+command=exo-open --launch TerminalEmulator man %s
+regex=false
+
+[action1]
+name=Web Search
+pattern=?
+command=exo-open --launch WebBrowser https://duckduckgo.com/?q=%u
+regex=false
+
+[action2]
+name=Wikipedia
+pattern=!w
+command=exo-open --launch WebBrowser https://en.wikipedia.org/wiki/%u
+regex=false
+
+[action3]
+name=Run in Terminal
+pattern=!
+command=exo-open --launch TerminalEmulator %s
+regex=false
+
+[action4]
+name=Open URI
+pattern=^(file|http|https):\\/\\/(.*)$
+command=exo-open \\0
+regex=true
+EOF1
+
+cat > "${HOME}/.config/xfce4/terminal/terminalrc" << EOF1
+[Configuration]
+FontUseSystem=TRUE
+MiscAlwaysShowTabs=FALSE
+MiscBell=FALSE
+MiscBellUrgent=FALSE
+MiscBordersDefault=TRUE
+MiscCursorBlinks=FALSE
+MiscCursorShape=TERMINAL_CURSOR_SHAPE_BLOCK
+MiscDefaultGeometry=80x24
+MiscInheritGeometry=FALSE
+MiscMenubarDefault=FALSE
+MiscMouseAutohide=FALSE
+MiscMouseWheelZoom=TRUE
+MiscToolbarDefault=FALSE
+MiscConfirmClose=TRUE
+MiscCycleTabs=TRUE
+MiscTabCloseButtons=TRUE
+MiscTabCloseMiddleClick=TRUE
+MiscTabPosition=GTK_POS_TOP
+MiscHighlightUrls=TRUE
+MiscMiddleClickOpensUri=FALSE
+MiscCopyOnSelect=FALSE
+MiscShowRelaunchDialog=TRUE
+MiscRewrapOnResize=TRUE
+MiscUseShiftArrowsToScroll=FALSE
+MiscSlimTabs=FALSE
+MiscNewTabAdjacent=FALSE
+MiscSearchDialogOpacity=100
+MiscShowUnsafePasteDialog=FALSE
+FontAllowBold=FALSE
+BackgroundMode=TERMINAL_BACKGROUND_TRANSPARENT
+BackgroundDarkness=0.900000
+ColorForeground=#c0c0c0
+ColorBackground=#000000
+ColorSelection=#ffffffffffff
+ColorCursor=#c0c0c0c0c0c0
+ColorPalette=#000000000000;#808000000000;#000080800000;#808080800000;#000000008080;#808000008080;#000080808080;#c0c0c0c0c0c0;#808080808080;#ffff00000000;#0000ffff0000;#ffffffff0000;#0000ffffffff;#ffff0000ffff;#00000000ffff;#ffffffffffff
+ScrollingBar=TERMINAL_SCROLLBAR_NONE
+EOF1
+
+	nohup xfce4-panel >/dev/null 2>&1 &
+}
+
+arccommon() {
+	xfce4-panel --quit
+	pkill xfconfd
+	sleep 1
+
+cat > "${HOME}/.config/xfce4/xfconf/xfce-perchannel-xml/xfce4-panel.xml" << EOF1
+<?xml version="1.0" encoding="UTF-8"?>
+
+<channel name="xfce4-panel" version="1.0">
+  <property name="configver" type="int" value="2"/>
+  <property name="panels" type="array">
+    <!--panel number 1-->
+    <value type="int" value="1"/>
+    <property name="panel-1" type="empty">
+      <property name="autohide-behavior" type="uint" value="0"/>
+      <property name="disable-struts" type="bool" value="false"/>
+      <property name="icon-size" type="uint" value="0"/>
+      <property name="leave-opacity" type="uint" value="100"/>
+      <property name="length" type="uint" value="100"/>
+      <property name="length-adjust" type="bool" value="true"/>
+      <property name="output-name" type="string" value="Primary"/>
+      <property name="plugin-ids" type="array">
+        <value type="int" value="1"/>
+        <value type="int" value="2"/>
+        <value type="int" value="3"/>
+        <value type="int" value="4"/>
+        <value type="int" value="5"/>
+        <value type="int" value="6"/>
+        <value type="int" value="7"/>
+        <value type="int" value="8"/>
+        <value type="int" value="9"/>
+        <value type="int" value="10"/>
+        <value type="int" value="11"/>
+        <value type="int" value="12"/>
+        <value type="int" value="13"/>
+        <value type="int" value="14"/>
+        <value type="int" value="15"/>
+        <value type="int" value="16"/>
+        <value type="int" value="17"/>
+      </property>
+      <property name="position" type="string" value="p=10;x=3839;y=1413"/>
+      <property name="position-locked" type="bool" value="true"/>
+      <property name="size" type="uint" value="40"/>
+      <property name="span-monitors" type="bool" value="false"/>
+    </property>
+  </property>
+  <property name="plugins" type="empty">
+    <!--whiskermenu-->
+    <property name="plugin-1" type="string" value="whiskermenu"/>
+    <property name="plugin-2" type="string" value="separator">
+      <property name="style" type="uint" value="2"/>
+    </property>
+    <!--launchers-->
+    <property name="plugin-3" type="string" value="launcher">
+      <property name="items" type="array">
+        <value type="string" value="thunar.desktop"/>
+      </property>
+      <property name="size-max" type="uint" value="18"/>
+    </property>
+    <property name="plugin-4" type="string" value="launcher">
+      <property name="items" type="array">
+        <value type="string" value="firefox.desktop"/>
+      </property>
+    </property>
+    <property name="plugin-5" type="string" value="launcher">
+      <property name="items" type="array">
+        <value type="string" value="thunderbird.desktop"/>
+      </property>
+    </property>
+    <property name="plugin-6" type="string" value="launcher">
+      <property name="items" type="array">
+        <value type="string" value="spotify.desktop"/>
+      </property>
+    </property>
+    <property name="plugin-7" type="string" value="launcher">
+      <property name="items" type="array">
+        <value type="string" value="sublime_text.desktop"/>
+      </property>
+    </property>
+    <property name="plugin-8" type="string" value="launcher">
+      <property name="items" type="array">
+        <value type="string" value="xfce4-terminal.desktop"/>
+      </property>
+    </property>
+    <property name="plugin-9" type="string" value="launcher">
+      <property name="items" type="array">
+        <value type="string" value="steam.desktop"/>
+      </property>
+    </property>
+    <property name="plugin-10" type="string" value="launcher">
+      <property name="items" type="array">
+        <value type="string" value="discord.desktop"/>
+      </property>
+    </property>
+    <!--active window icons-->
+    <property name="plugin-11" type="string" value="tasklist">
+      <property name="flat-buttons" type="bool" value="true"/>
+      <property name="grouping" type="uint" value="1"/>
+      <property name="show-handle" type="bool" value="true"/>
+      <property name="show-labels" type="bool" value="false"/>
+      <property name="window-scrolling" type="bool" value="false"/>
+      <property name="sort-order" type="uint" value="1"/>
+    </property>
+    <property name="plugin-12" type="string" value="separator">
+      <property name="expand" type="bool" value="true"/>
+      <property name="style" type="uint" value="0"/>
+    </property>
+    <!--pulseaudio control-->
+    <property name="plugin-13" type="string" value="pulseaudio">
+      <property name="enable-keyboard-shortcuts" type="bool" value="true"/>
+      <property name="mpris-players" type="string" value="chromium.instance37980;spotify"/>
+    </property>
+    <!--systray-->
+    <property name="plugin-14" type="string" value="systray">
+      <property name="names-ordered" type="array">
+        <value type="string" value="caffeine"/>
+        <value type="string" value="redshift-gtk"/>
+        <value type="string" value="steam"/>
+        <value type="string" value="discord"/>
+        <value type="string" value="nextcloud"/>
+        <value type="string" value="blueman-tray"/>
+        <value type="string" value="networkmanager applet"/>
+        <value type="string" value="thunar"/>
+        <value type="string" value="xpad"/>
+        <value type="string" value="cura"/>
+        <value type="string" value="blueman"/>
+        <value type="string" value="bluetooth enabled"/>
+        <value type="string" value="pasystray"/>
+        <value type="string" value="pulseaudio system tray"/>
+      </property>
+      <property name="names-hidden" type="array">
+        <value type="string" value="bluetooth enabled"/>
+        <value type="string" value="pulseaudio system tray"/>
+        <value type="string" value="cura"/>
+        <value type="string" value="pasystray"/>
+      </property>
+      <property name="size-max" type="uint" value="18"/>
+      <property name="square-icons" type="bool" value="false"/>
+      <property name="show-frame" type="bool" value="false"/>
+    </property>
+    <property name="plugin-15" type="string" value="clock">
+      <property name="tooltip-format" type="string" value="%A %d %B %Y"/>
+      <property name="digital-format" type="string" value="%H:%M"/>
+      <property name="timezone" type="string" value=""/>
+    </property>
+    <property name="plugin-16" type="string" value="separator">
+      <property name="expand" type="bool" value="false"/>
+      <property name="style" type="uint" value="0"/>
+    </property>
+    <!--systray - here i can uncomment what I don't want to see-->
+    <property name="plugin-17" type="string" value="actions">
+      <property name="appearance" type="uint" value="0"/>
+      <property name="items" type="array">
+        <value type="string" value="-lock-screen"/>
+        <value type="string" value="-switch-user"/>
+        <value type="string" value="-separator"/>
+        <value type="string" value="-suspend"/>
+        <value type="string" value="-hibernate"/>
+        <value type="string" value="-hybrid-sleep"/>
+        <value type="string" value="-separator"/>
+        <value type="string" value="-shutdown"/>
+        <value type="string" value="-restart"/>
+        <value type="string" value="-separator"/>
+        <value type="string" value="+logout"/>
+        <value type="string" value="-logout-dialog"/>
+      </property>
+    </property>
+  </property>
+</channel>
+EOF1
+
+cat > "${HOME}/.config/xfce4/panel/whiskermenu-1.rc" << EOF1
+favorites=thunar.desktop,firefox.desktop,thunderbird.desktop,spotify.desktop,sublime_text.desktop,urxvt.desktop,steam.desktop
+recent=firefox.desktop,sublime_text.desktop,xfce4-panel-profiles.desktop,xfce-display-settings.desktop,discord.desktop,ccsm.desktop,gimp.desktop,xfce-keyboard-settings.desktop,spotify.desktop,vncviewer.desktop
+button-title=Start\ \ \ 
+button-icon=distributor-logo-archlinux
+button-single-row=false
+show-button-title=false
+show-button-icon=true
+launcher-show-name=true
+launcher-show-description=true
+launcher-show-tooltip=true
+item-icon-size=2
+hover-switch-category=false
+category-show-name=true
+category-icon-size=1
+load-hierarchy=false
+view-as-icons=false
+recent-items-max=10
+favorites-in-recent=true
+display-recent-default=false
+position-search-alternate=true
+position-commands-alternate=true
+position-categories-alternate=true
+stay-on-focus-out=false
+confirm-session-command=true
+menu-width=400
+menu-height=500
+menu-opacity=100
+command-settings=xfce4-settings-manager
+show-command-settings=true
+command-lockscreen=i3lock-fancy-rapid 10 5
+show-command-lockscreen=true
+command-switchuser=gdmflexiserver
+show-command-switchuser=false
+command-logoutuser=xfce4-session-logout --logout --fast
+show-command-logoutuser=false
+command-restart=xfce4-session-logout --reboot --fast
+show-command-restart=false
+command-shutdown=xfce4-session-logout --halt --fast
+show-command-shutdown=false
+command-suspend=xfce4-session-logout --suspend
+show-command-suspend=false
+command-hibernate=xfce4-session-logout --hibernate
+show-command-hibernate=false
+command-logout=xfce4-session-logout
+show-command-logout=true
+command-menueditor=menulibre
+show-command-menueditor=true
+command-profile=mugshot
+show-command-profile=true
+search-actions=5
+
+[action0]
+name=Man Pages
+pattern=#
+command=exo-open --launch TerminalEmulator man %s
+regex=false
+
+[action1]
+name=Web Search
+pattern=?
+command=exo-open --launch WebBrowser https://duckduckgo.com/?q=%u
+regex=false
+
+[action2]
+name=Wikipedia
+pattern=!w
+command=exo-open --launch WebBrowser https://en.wikipedia.org/wiki/%u
+regex=false
+
+[action3]
+name=Run in Terminal
+pattern=!
+command=exo-open --launch TerminalEmulator %s
+regex=false
+
+[action4]
+name=Open URI
+pattern=^(file|http|https):\\/\\/(.*)$
+command=exo-open \\0
+regex=true
+EOF1
+
+cat > "${HOME}/.config/xfce4/terminal/terminalrc" << EOF1
+[Configuration]
+FontUseSystem=TRUE
+MiscAlwaysShowTabs=FALSE
+MiscBell=FALSE
+MiscBellUrgent=FALSE
+MiscBordersDefault=TRUE
+MiscCursorBlinks=FALSE
+MiscCursorShape=TERMINAL_CURSOR_SHAPE_BLOCK
+MiscDefaultGeometry=80x24
+MiscInheritGeometry=FALSE
+MiscMenubarDefault=FALSE
+MiscMouseAutohide=FALSE
+MiscMouseWheelZoom=TRUE
+MiscToolbarDefault=FALSE
+MiscConfirmClose=TRUE
+MiscCycleTabs=TRUE
+MiscTabCloseButtons=TRUE
+MiscTabCloseMiddleClick=TRUE
+MiscTabPosition=GTK_POS_TOP
+MiscHighlightUrls=TRUE
+MiscMiddleClickOpensUri=FALSE
+MiscCopyOnSelect=FALSE
+MiscShowRelaunchDialog=TRUE
+MiscRewrapOnResize=TRUE
+MiscUseShiftArrowsToScroll=FALSE
+MiscSlimTabs=FALSE
+MiscNewTabAdjacent=FALSE
+MiscSearchDialogOpacity=100
+MiscShowUnsafePasteDialog=FALSE
+FontAllowBold=TRUE
+BackgroundMode=TERMINAL_BACKGROUND_TRANSPARENT
+BackgroundDarkness=0.900000
+TabActivityColor=#a6a6e2e22e2e
+ColorCursor=#f8f8f8f8f2f2
+ColorForeground=#f8f8f8f8f2f2
+ColorBackground=#272728282222
+ColorPalette=#272728282222;#f9f926267272;#a6a6e2e22e2e;#f4f4bfbf7575;#6666d9d9efef;#aeae8181ffff;#a1a1efefe4e4;#f8f8f8f8f2f2;#757571715e5e;#f9f926267272;#a6a6e2e22e2e;#f4f4bfbf7575;#6666d9d9efef;#aeae8181ffff;#a1a1efefe4e4;#f9f9f8f8f5f5
+ScrollingBar=TERMINAL_SCROLLBAR_NONE
+EOF1
+
+	nohup xfce4-panel >/dev/null 2>&1 &
+}
+
+redmond97() {
+	xfconf-query -c xsettings -np '/Net/ThemeName' -s 'Redmond97'
+	xfconf-query -c xsettings -np '/Net/IconThemeName' -s 'LinXP'
+	xfconf-query -c xsettings -np '/Gtk/FontName' -s 'Liberation Sans 10'
+	xfconf-query -c xsettings -np '/Gtk/MonospaceFontName' -s 'More Perfect DOS VGA 11'
+	
+	gsettings set org.gnome.desktop.wm.preferences theme 'Redmond97'
+
+	redmondcommon
+}
+
+redmond97millennium() {
+	xfconf-query -c xsettings -np '/Net/ThemeName' -s 'Redmond97 Millennium'
+	xfconf-query -c xsettings -np '/Net/IconThemeName' -s 'LinXP'
+	xfconf-query -c xsettings -np '/Gtk/FontName' -s 'Liberation Sans 10'
+	xfconf-query -c xsettings -np '/Gtk/MonospaceFontName' -s 'More Perfect DOS VGA 11'
+
+	gsettings set org.gnome.desktop.wm.preferences theme 'Redmond97 Millennium'
+
+	redmondcommon
+}
+
+arcdark() {
+	xfconf-query -c xsettings -np '/Net/ThemeName' -s 'Arc-Dark'
+	xfconf-query -c xsettings -np '/Net/IconThemeName' -s 'la-capitaine-icon-theme'
+	xfconf-query -c xsettings -np '/Gtk/FontName' -s 'SF Pro Display 10'
+	xfconf-query -c xsettings -np '/Gtk/MonospaceFontName' -s 'Monaco 10'
+
+	gsettings set org.gnome.desktop.wm.preferences theme 'Arc'
+
+	arccommon
+}
+
+eval $1
